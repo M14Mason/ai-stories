@@ -1,0 +1,9 @@
+out/
+stories/
+models/
+node_modules/
+hf/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.tmp

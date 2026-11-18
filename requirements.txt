@@ -1,0 +1,10 @@
+anthropic>=0.40
+requests>=2.31
+pynacl>=1.5
+kokoro-onnx
+soundfile
+faster-whisper
+soxr
+numpy
+pillow
+tzdata

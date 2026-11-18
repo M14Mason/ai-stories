@@ -1,0 +1,51 @@
+name: tick
+# Posts anything due, refreshes stats and tokens. Runs hourly; also runs dashboard commands.
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+    inputs:
+      command:
+        description: "check | approve | skip | post_now | retry | mark_published (blank = normal tick)"
+        required: false
+        default: ""
+      post_id:
+        description: "Post id for the command"
+        required: false
+        default: ""
+permissions:
+  contents: write
+concurrency:
+  group: state
+  cancel-in-progress: false
+jobs:
+  tick:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: pip }
+      - run: pip install -q requests pynacl tzdata
+      - name: Run
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_PAT: ${{ secrets.GH_PAT }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+          TT_CLIENT_KEY: ${{ secrets.TT_CLIENT_KEY }}
+          TT_CLIENT_SECRET: ${{ secrets.TT_CLIENT_SECRET }}
+          TT_REFRESH_TOKEN: ${{ secrets.TT_REFRESH_TOKEN }}
+          CMD: ${{ inputs.command }}
+          POST_ID: ${{ inputs.post_id }}
+        run: |
+          if [ "$CMD" = "check" ]; then python -m autopost check
+          elif [ -n "$CMD" ]; then python -m autopost command "$CMD" "$POST_ID"; fi
+          python -m autopost tick
+      - name: Save state
+        if: always()
+        run: bash scripts/commit_state.sh "tick"

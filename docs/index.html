@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0b0d10">
+<title>AI Stories</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{--bg:#0b0d10;--card:#14171c;--card2:#1b1f26;--line:#242a33;--tx:#e8eaed;--mut:#8a919c;--ok:#3ddc84;--bad:#ff5a5f;--warn:#ffb547;--ig:#e1306c;--yt:#ff3347;--tt:#25f4ee;--r:16px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text","Inter",system-ui,sans-serif}
+body{padding:calc(env(safe-area-inset-top) + 8px) 16px calc(env(safe-area-inset-bottom) + 84px)}
+h1{font-size:28px;letter-spacing:-.02em;margin:10px 0 2px}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);margin:24px 0 10px;font-weight:600}
+.sub{color:var(--mut);font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin-bottom:10px}
+.row{display:flex;align-items:center;gap:12px}
+.grow{flex:1;min-width:0}
+.thumb{width:48px;height:85px;border-radius:8px;object-fit:cover;background:var(--card2);flex:none}
+.title{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pill{display:inline-block;font-size:11px;font-weight:600;padding:3px 8px;border-radius:99px;background:var(--card2);color:var(--mut);text-transform:uppercase;letter-spacing:.04em}
+.pill.posted{color:var(--ok);background:rgba(61,220,132,.12)}
+.pill.failed{color:var(--bad);background:rgba(255,90,95,.12)}
+.pill.inbox,.pill.pending_approval{color:var(--warn);background:rgba(255,181,71,.12)}
+.pill.scheduled{color:#9ab4ff;background:rgba(122,150,255,.12)}
+.plat{font-size:11px;font-weight:700;letter-spacing:.04em}
+.plat.instagram{color:var(--ig)}.plat.youtube{color:var(--yt)}.plat.tiktok{color:var(--tt)}
+.btn{appearance:none;border:0;border-radius:12px;padding:12px 14px;font:600 15px inherit;font-family:inherit;background:var(--card2);color:var(--tx);cursor:pointer}
+.btn.pri{background:var(--tx);color:#0b0d10}
+.btn.ok{background:var(--ok);color:#06210f}
+.btn.bad{background:rgba(255,90,95,.14);color:var(--bad)}
+.btn.sm{padding:8px 12px;font-size:13px;border-radius:10px}
+.btn:active{opacity:.7}
+.btn[disabled]{opacity:.4}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btns .btn{flex:1}
+.stat{flex:1;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px}
+.stat b{display:block;font-size:22px;letter-spacing:-.02em}
+.stat span{color:var(--mut);font-size:12px}
+.dots{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.dot{font-size:12px;color:var(--mut);display:flex;align-items:center;gap:5px}
+.dot i{width:8px;height:8px;border-radius:50%;background:var(--mut);display:inline-block}
+.dot.ok i{background:var(--ok)}.dot.bad i{background:var(--bad)}
+.bar{height:6px;border-radius:9px;background:var(--card2);overflow:hidden;margin-top:8px}
+.bar>div{height:100%;background:var(--ok)}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:rgba(11,13,16,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom);z-index:5}
+nav button{flex:1;background:none;border:0;color:var(--mut);padding:10px 0 8px;font:600 11px inherit;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:3px}
+nav button.on{color:var(--tx)}
+nav svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.view{display:none;animation:fade .18s ease}
+.view.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9;display:none}
+.sheet{position:fixed;left:0;right:0;bottom:0;max-height:88vh;overflow:auto;background:var(--card);border-radius:22px 22px 0 0;padding:18px 16px calc(env(safe-area-inset-bottom) + 18px);z-index:10;transform:translateY(100%);transition:transform .22s ease}
+.sheet.on{transform:none}
+.grab{width:40px;height:5px;border-radius:9px;background:var(--line);margin:0 auto 14px}
+video{width:100%;max-height:52vh;border-radius:14px;background:#000}
+textarea,input,select{width:100%;background:var(--card2);color:var(--tx);border:1px solid var(--line);border-radius:12px;padding:11px;font:15px inherit;font-family:inherit}
+textarea{min-height:90px;resize:vertical}
+label{display:block;font-size:12px;color:var(--mut);margin:12px 0 6px}
+.toggle{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.toggle:last-child{border:0}
+.sw{width:50px;height:30px;border-radius:99px;background:var(--card2);position:relative;border:1px solid var(--line);flex:none}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:var(--mut);transition:.18s}
+.sw.on{background:rgba(61,220,132,.25)}.sw.on::after{left:23px;background:var(--ok)}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px}
+.chip{flex:none;padding:7px 12px;border-radius:99px;background:var(--card);border:1px solid var(--line);color:var(--mut);font-size:13px;font-weight:600}
+.chip.on{color:var(--tx);border-color:var(--tx)}
+.toast{position:fixed;left:16px;right:16px;bottom:calc(env(safe-area-inset-bottom) + 76px);background:var(--tx);color:#0b0d10;padding:12px 14px;border-radius:12px;font-weight:600;z-index:20;transform:translateY(20px);opacity:0;transition:.2s;pointer-events:none}
+.toast.on{transform:none;opacity:1}
+.empty{color:var(--mut);text-align:center;padding:24px 8px}
+.chart{display:flex;align-items:flex-end;gap:2px;height:80px;margin-top:6px}
+.chart div{flex:1;background:var(--card2);border-radius:3px 3px 0 0;min-height:2px}
+.chart div.hot{background:var(--ok)}
+.axis{display:flex;justify-content:space-between;color:var(--mut);font-size:10px;margin-top:4px}
+.err{color:var(--bad);font-size:13px;margin-top:6px;word-break:break-word}
+.warnt{color:var(--warn);font-size:13px;margin-top:6px}
+a{color:#9ab4ff}
+.mini{font-size:12px;color:var(--mut)}
+.metrics{display:flex;gap:12px;font-size:12px;color:var(--mut);margin-top:4px}
+.metrics b{color:var(--tx)}
+summary::-webkit-details-marker{display:none}
+details[open] summary{margin-bottom:4px}
+</style>
+</head>
+<body>
+
+<div id="login" class="view">
+  <h1>AI Stories</h1>
+  <p class="sub">Connect to your GitHub repo. Your token stays on this phone.</p>
+  <label>Repository (owner/name)</label><input id="lRepo" placeholder="masonngo/ai-stories" autocapitalize="off" autocorrect="off">
+  <label>GitHub token</label>
+  <div class="mini" style="margin-bottom:8px">Make one at <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a>: Repository access = only this repo. Permissions: <b>Actions</b>, <b>Contents</b>, <b>Secrets</b> all set to Read and write. Expiration: 1 year.</div><input id="lTok" type="password" placeholder="github_pat_...">
+  <div style="height:16px"></div>
+  <button class="btn pri" style="width:100%" onclick="doLogin()">Connect</button>
+  <p class="mini" style="margin-top:14px">Or <a href="?demo">open the demo</a> with sample data.</p>
+</div>
+
+<div id="v-today" class="view">
+  <div class="row"><div class="grow"><h1 id="chanName">AI Stories</h1><div class="sub" id="todayDate"></div></div>
+    <button class="btn sm" onclick="load(true)">Refresh</button></div>
+  <div class="dots" id="health"></div>
+  <div class="row" style="margin-top:14px;gap:8px">
+    <div class="stat"><b id="sToday">0/0</b><span>posted today</span></div>
+    <div class="stat"><b id="sViews">0</b><span>views, 7 days</span></div>
+    <div class="stat"><b id="sCost">$0</b><span id="sBudget">Claude this month</span></div>
+  </div>
+  <div class="bar"><div id="costBar" style="width:0"></div></div>
+  <div id="setupBanner"></div>
+  <div id="attn"></div>
+  <h2>Today</h2><div id="todayList"></div>
+  <h2>Tomorrow and later</h2><div id="laterList"></div>
+  <div class="btns" style="margin-top:14px">
+    <button class="btn" onclick="dispatch('build.yml',{series:''},'Building all series. About 15 minutes.')">Build now</button>
+    <button class="btn" onclick="dispatch('tick.yml',{command:'check',post_id:''},'Testing connections. About 1 minute.')">Test connections</button>
+  </div>
+</div>
+
+<div id="v-setup" class="view">
+  <h1>Setup</h1>
+  <p class="sub">Do these in order. Each one turns green when it works. All keys go straight into your repo's encrypted GitHub secrets, never into the code.</p>
+  <div id="setupList"></div>
+</div>
+
+<div id="v-posts" class="view">
+  <h1>Posts</h1>
+  <div class="chips" id="postChips"></div>
+  <div id="postList"></div>
+</div>
+
+<div id="v-series" class="view">
+  <h1>Series</h1>
+  <p class="sub">One episode per active series per day. Each continues from the last.</p>
+  <div id="seriesList"></div>
+  <button class="btn" style="width:100%" onclick="editSeries(null)">Add series</button>
+</div>
+
+<div id="v-stats" class="view">
+  <h1>Stats</h1>
+  <p class="sub">Total views by platform</p>
+  <div class="row" style="gap:8px" id="platTotals"></div>
+  <h2>By series</h2><div id="seriesStats"></div>
+  <h2>Best posting hours</h2>
+  <p class="sub">Learned from your own views. Green is the best hour so far. Needs about 2 weeks of posts.</p>
+  <div id="hours"></div>
+  <h2>Claude cost</h2><div id="costCard"></div>
+</div>
+
+<div id="v-system" class="view">
+  <h1>System</h1>
+  <h2>Automation</h2>
+  <div class="card" id="settingsCard"></div>
+  <h2>Recent runs</h2><div id="runs"></div>
+  <h2>Activity log</h2><div id="runlog"></div>
+  <h2>Setup</h2><div class="card"><button class="btn" style="width:100%" onclick="show('setup')">Open setup checklist</button></div>
+  <h2>Account</h2>
+  <div class="card"><div class="mini" id="whoami"></div><div style="height:10px"></div><button class="btn bad" style="width:100%" onclick="logout()">Disconnect this phone</button></div>
+</div>
+
+<nav id="nav">
+  <button data-v="today" class="on"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>Today</button>
+  <button data-v="posts"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M10 9l5 3-5 3z"/></svg>Posts</button>
+  <button data-v="series"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Series</button>
+  <button data-v="stats"><svg viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7"/></svg>Stats</button>
+  <button data-v="system"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>System</button>
+</nav>
+
+<div class="sheet-bg" id="sheetBg" onclick="closeSheet()"></div>
+<div class="sheet" id="sheet"><div class="grab"></div><div id="sheetBody"></div></div>
+<div class="toast" id="toast"></div>
+
+<script src="sealbox.js"></script>
+<script>
+"use strict";
+const DEMO = location.search.includes("demo");
+const PLAT = {instagram:"Instagram", youtube:"YouTube", tiktok:"TikTok"};
+const STATUS = {scheduled:"Scheduled", pending_approval:"Needs OK", posting:"Posting", posted:"Posted", inbox:"Inbox", failed:"Failed", skipped:"Skipped"};
+let S = {posts:[], runs:{runs:[]}, usage:{}, best:{}, health:{}, settings:{}, series:[], episodes:{}, ghRuns:[], sha:{}};
+let postFilter = "all";
+
+const store = {
+  get(k){ try{ return localStorage.getItem(k); }catch(e){ return store._m[k] || null; } },
+  set(k,v){ try{ localStorage.setItem(k,v); }catch(e){ store._m[k]=v; } },
+  del(k){ try{ localStorage.removeItem(k); }catch(e){ delete store._m[k]; } },
+  _m:{}
+};
+const repo = () => store.get("as_repo");
+const tok = () => store.get("as_tok");
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmtN = n => n >= 1e6 ? (n/1e6).toFixed(1)+"M" : n >= 1e3 ? (n/1e3).toFixed(1)+"K" : String(n||0);
+const tz = () => S.settings.timezone || "America/Los_Angeles";
+const fmtTime = iso => new Date(iso).toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit",timeZone:tz()});
+const fmtDay = iso => new Date(iso).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",timeZone:tz()});
+const dayKey = d => new Date(d).toLocaleDateString("en-CA",{timeZone:tz()});
+
+function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.add("on"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("on"),3200); }
+
+async function gh(path, opt={}){
+  const r = await fetch("https://api.github.com"+path, {...opt, headers:{"Authorization":"Bearer "+tok(),"Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28",...(opt.headers||{})}});
+  if(r.status===204) return null;
+  const j = await r.json().catch(()=>({}));
+  if(!r.ok) throw new Error((j.message||r.status)+" on "+path);
+  return j;
+}
+const b64d = s => decodeURIComponent(escape(atob(s.replace(/\n/g,""))));
+const b64e = s => btoa(unescape(encodeURIComponent(s)));
+
+async function readJSON(path, fallback){
+  if(DEMO) return DEMO_DATA[path] ?? fallback;
+  try{
+    const j = await gh(`/repos/${repo()}/contents/${path}?t=${Date.now()}`);
+    S.sha[path] = j.sha;
+    return JSON.parse(b64d(j.content));
+  }catch(e){ if(String(e).includes("Not Found")) return fallback; throw e; }
+}
+async function writeJSON(path, data, msg){
+  if(DEMO){ DEMO_DATA[path]=data; return; }
+  await readJSON(path, null);
+  const res = await gh(`/repos/${repo()}/contents/${path}`, {method:"PUT", body:JSON.stringify({message:msg, content:b64e(JSON.stringify(data,null,2)+"\n"), sha:S.sha[path]})});
+  S.sha[path] = res.content.sha;
+}
+async function dispatch(wf, inputs, msg){
+  if(DEMO){ toast("Demo: "+msg); return; }
+  try{
+    await gh(`/repos/${repo()}/actions/workflows/${wf}/dispatches`, {method:"POST", body:JSON.stringify({ref:"main", inputs})});
+    toast(msg); closeSheet();
+    setTimeout(()=>load(), 75000);
+  }catch(e){ toast("Failed: "+e.message); }
+}
+const cmd = (c, id, label) => dispatch("tick.yml", {command:c, post_id:id}, label+". Updates in about a minute.");
+
+async function load(manual){
+  try{
+    const [posts, runs, usage, best, health, settings, series] = await Promise.all([
+      readJSON("state/posts.json", []), readJSON("state/runs.json", {runs:[]}), readJSON("state/usage.json", {}),
+      readJSON("state/best_hours.json", {}), readJSON("state/health.json", {}),
+      readJSON("config/settings.json", {}), readJSON("config/series.json", [])]);
+    Object.assign(S, {posts, runs, usage, best, health, settings, series});
+    const eps = await Promise.all(series.map(s => readJSON(`state/episodes/${s.id}.json`, {episodes:[]})));
+    series.forEach((s,i)=> S.episodes[s.id] = eps[i].episodes || []);
+    S.secrets = DEMO ? DEMO_DATA.secrets : await gh(`/repos/${repo()}/actions/secrets?per_page=100`).then(j=>j.secrets.map(x=>x.name)).catch(e=>{ S.secretsErr=e.message; return []; });
+    S.ghRuns = DEMO ? DEMO_DATA.runsGH : (await gh(`/repos/${repo()}/actions/runs?per_page=12`)).workflow_runs;
+    render();
+    if(manual) toast("Up to date");
+  }catch(e){
+    toast("Load failed: "+e.message);
+    if(String(e).includes("Bad credentials")) logout();
+  }
+}
+
+function postCard(p){
+  const m = p.metrics || {};
+  return `<div class="card" onclick="openPost('${esc(p.id)}')"><div class="row">
+    <img class="thumb" src="${esc(p.thumb_url)}" loading="lazy" onerror="this.style.visibility='hidden'">
+    <div class="grow">
+      <div class="plat ${p.platform}">${PLAT[p.platform]}</div>
+      <div class="title">${esc(p.series_name)}</div>
+      <div class="sub">Part ${p.episode} · ${p.posted_at ? "Posted "+fmtDay(p.posted_at)+", "+fmtTime(p.posted_at) : fmtDay(p.scheduled_at)+", "+fmtTime(p.scheduled_at)}</div>
+      ${m.views!=null ? `<div class="metrics"><span><b>${fmtN(m.views)}</b> views</span><span><b>${fmtN(m.likes)}</b> likes</span><span><b>${fmtN(m.comments)}</b> comments</span></div>`:""}
+      ${p.status==="failed" && p.error ? `<div class="err">${esc(p.error.slice(0,140))}</div>`:""}
+      ${p.warning ? `<div class="warnt">${esc(p.warning)}</div>`:""}
+    </div>
+    <span class="pill ${p.status}">${STATUS[p.status]||p.status}</span></div></div>`;
+}
+
+function render(){
+  const s = S.settings, today = dayKey(Date.now());
+  $("chanName").textContent = s.channel || "AI Stories";
+  $("todayDate").textContent = new Date().toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric",timeZone:tz()});
+  const h = S.health || {};
+  $("health").innerHTML = ["instagram","youtube","tiktok","claude"].map(k => {
+    const v = h[k]; const cls = v ? (v.ok?"ok":"bad") : "";
+    return `<span class="dot ${cls}" title="${esc(v?.detail||"not tested")}"><i></i>${k==="claude"?"Claude":PLAT[k]}</span>`;
+  }).join("") + (h.at ? `<span class="dot">tested ${fmtDay(h.at)}</span>` : `<span class="dot">connections not tested yet</span>`);
+
+  const todays = S.posts.filter(p => dayKey(p.scheduled_at)===today).sort((a,b)=>a.scheduled_at.localeCompare(b.scheduled_at));
+  const later = S.posts.filter(p => dayKey(p.scheduled_at)>today && ["scheduled","pending_approval"].includes(p.status)).sort((a,b)=>a.scheduled_at.localeCompare(b.scheduled_at));
+  $("sToday").textContent = todays.filter(p=>["posted","inbox"].includes(p.status)).length + "/" + todays.length;
+  const wk = Date.now()-7*864e5;
+  $("sViews").textContent = fmtN(S.posts.filter(p=>p.posted_at && new Date(p.posted_at)>wk).reduce((a,p)=>a+((p.metrics||{}).views||0),0));
+  const mk = new Date().toLocaleDateString("en-CA",{timeZone:tz()}).slice(0,7);
+  const spent = (S.usage[mk]||{}).usd || 0, budget = s.monthly_budget_usd || 20;
+  $("sCost").textContent = "$"+spent.toFixed(2);
+  $("sBudget").textContent = "of $"+budget+" Claude";
+  $("costBar").style.width = Math.min(100, spent/budget*100)+"%";
+  $("costBar").style.background = spent/budget>.85 ? "var(--bad)" : "var(--ok)";
+
+  const attn = [];
+  const failed = S.posts.filter(p=>p.status==="failed").length;
+  const inbox = S.posts.filter(p=>p.status==="inbox").length;
+  const pend = S.posts.filter(p=>p.status==="pending_approval").length;
+  const lastBuild = (S.runs.runs||[]).find(r=>r.kind==="build");
+  if(inbox) attn.push(`<div class="card" style="border-color:rgba(255,181,71,.4)"><b>${inbox} TikTok draft${inbox>1?"s":""} waiting</b><div class="sub">Open each one, copy the caption, publish in TikTok, then tap Mark published.</div></div>`);
+  if(pend) attn.push(`<div class="card" style="border-color:rgba(255,181,71,.4)"><b>${pend} post${pend>1?"s":""} need your OK</b><div class="sub">Approval mode is on. Tap a post to approve or skip it.</div></div>`);
+  if(failed) attn.push(`<div class="card" style="border-color:rgba(255,90,95,.4)"><b>${failed} failed post${failed>1?"s":""}</b><div class="sub">Tap one to see the error and retry.</div></div>`);
+  if(lastBuild && !lastBuild.ok) attn.push(`<div class="card" style="border-color:rgba(255,90,95,.4)"><b>Last build had errors</b><div class="err">${esc((lastBuild.errors||[]).join(" | ").slice(0,300))}</div></div>`);
+  $("attn").innerHTML = attn.length ? "<h2>Needs you</h2>"+attn.join("") : "";
+  $("todayList").innerHTML = todays.map(postCard).join("") || `<div class="empty">Nothing scheduled today yet. The daily build runs at about 2 AM.</div>`;
+  $("laterList").innerHTML = later.map(postCard).join("") || `<div class="empty">Nothing queued.</div>`;
+
+  const filters = ["all","posted","scheduled","inbox","failed","instagram","youtube","tiktok"];
+  $("postChips").innerHTML = filters.map(f=>`<button class="chip ${postFilter===f?"on":""}" onclick="postFilter='${f}';render()">${f==="all"?"All":(PLAT[f]||STATUS[f])}</button>`).join("");
+  const list = S.posts.filter(p => postFilter==="all" || p.status===postFilter || p.platform===postFilter)
+    .sort((a,b)=>(b.posted_at||b.scheduled_at).localeCompare(a.posted_at||a.scheduled_at)).slice(0,120);
+  $("postList").innerHTML = list.map(postCard).join("") || `<div class="empty">No posts yet.</div>`;
+
+  $("seriesList").innerHTML = S.series.map(sr => {
+    const eps = S.episodes[sr.id]||[]; const last = eps[eps.length-1];
+    return `<div class="card"><div class="row"><div class="grow"><div class="title">${esc(sr.name)}</div>
+      <div class="sub">${eps.length} episode${eps.length===1?"":"s"} · ${esc(sr.place||"")}</div></div>
+      <div class="sw ${sr.active!==false?"on":""}" onclick="toggleSeries('${sr.id}')"></div></div>
+      ${last?`<div class="mini" style="margin-top:8px"><b style="color:var(--tx)">Part ${last.n}:</b> ${esc(last.synopsis)}</div><div class="mini" style="margin-top:4px">Next: ${esc(last.cliffhanger)}</div>`:""}
+      <div class="btns" style="margin-top:10px"><button class="btn sm" onclick="editSeries('${sr.id}')">Edit</button>
+      <button class="btn sm" onclick="dispatch('build.yml',{series:'${sr.id}'},'Building ${esc(sr.name)}. About 6 minutes.')">Build today's</button></div></div>`;
+  }).join("");
+
+  const posted = S.posts.filter(p=>p.metrics && p.metrics.views!=null);
+  $("platTotals").innerHTML = Object.keys(PLAT).map(k=>{
+    const ps = posted.filter(p=>p.platform===k);
+    return `<div class="stat"><b>${fmtN(ps.reduce((a,p)=>a+(p.metrics.views||0),0))}</b><span class="plat ${k}">${PLAT[k]}</span></div>`;
+  }).join("");
+  const bySer = S.series.map(sr=>{
+    const ps = posted.filter(p=>p.series===sr.id);
+    return {name:sr.name, views:ps.reduce((a,p)=>a+(p.metrics.views||0),0), likes:ps.reduce((a,p)=>a+(p.metrics.likes||0),0), n:ps.length};
+  });
+  const maxV = Math.max(1,...bySer.map(x=>x.views));
+  $("seriesStats").innerHTML = bySer.map(x=>`<div class="card"><div class="row"><div class="grow title">${esc(x.name)}</div><b>${fmtN(x.views)}</b></div>
+    <div class="bar"><div style="width:${x.views/maxV*100}%"></div></div><div class="mini" style="margin-top:6px">${x.n} posts with stats · ${fmtN(x.likes)} likes · avg ${fmtN(x.n?Math.round(x.views/x.n):0)} views</div></div>`).join("");
+  $("hours").innerHTML = Object.keys(PLAT).map(k=>{
+    const rows = (S.best||{})[k]||[]; const by = {}; rows.forEach(r=>by[r.hour]=r);
+    const mx = Math.max(1.2,...rows.map(r=>r.score)); const top = rows.slice().sort((a,b)=>b.score-a.score)[0];
+    const bars = Array.from({length:24},(_,h)=>`<div class="${top&&top.hour===h?"hot":""}" style="height:${by[h]?by[h].score/mx*100:2}%"></div>`).join("");
+    return `<div class="card"><div class="row"><span class="plat ${k} grow">${PLAT[k]}</span><span class="mini">${top?"best "+(top.hour%12||12)+(top.hour<12?" AM":" PM")+" ("+top.posts+" posts)":"no data yet"}</span></div>
+      <div class="chart">${bars}</div><div class="axis"><span>12a</span><span>6a</span><span>12p</span><span>6p</span><span>11p</span></div></div>`;
+  }).join("");
+  const mu = S.usage[mk]||{};
+  $("costCard").innerHTML = `<div class="card"><div class="row"><div class="grow">This month</div><b>$${(mu.usd||0).toFixed(2)}</b></div>
+    <div class="mini">${mu.calls||0} calls · write $${((mu.by_purpose||{}).write||0).toFixed(2)} · check $${((mu.by_purpose||{}).qa||0).toFixed(2)} · fixes $${((mu.by_purpose||{}).revise||0).toFixed(2)}</div>
+    <div class="mini" style="margin-top:6px">Builds stop automatically at the $${budget} budget.</div></div>`;
+
+  const pf = s.platforms || {};
+  $("settingsCard").innerHTML = `
+    <div class="toggle"><div><b>Ask before posting</b><div class="mini">Off = fully automatic</div></div><div class="sw ${s.approval==="manual"?"on":""}" onclick="setSetting('approval', S.settings.approval==='manual'?'auto':'manual')"></div></div>
+    ${Object.keys(PLAT).map(k=>`<div class="toggle"><div><b>${PLAT[k]}</b><div class="mini">${k==="tiktok"?(pf.tiktok?.mode==="direct"?"Direct post (audited apps only)":"Inbox drafts, you tap Post"):"Auto post"}</div></div><div class="sw ${pf[k]?.enabled?"on":""}" onclick="togglePlat('${k}')"></div></div>`).join("")}
+    <div class="toggle"><div><b>Visual quality check</b><div class="mini">Claude looks at frames before posting</div></div><div class="sw ${s.vision_qa!==false?"on":""}" onclick="setSetting('vision_qa', S.settings.vision_qa===false)"></div></div>
+    <label>Monthly Claude budget (USD)</label><input type="number" min="1" value="${budget}" onchange="setSetting('monthly_budget_usd', Number(this.value))">
+    <label>TikTok mode</label><select onchange="setTikTokMode(this.value)"><option value="inbox" ${pf.tiktok?.mode!=="direct"?"selected":""}>Inbox drafts (works now)</option><option value="direct" ${pf.tiktok?.mode==="direct"?"selected":""}>Direct post (after TikTok audit)</option></select>`;
+  $("runs").innerHTML = (S.ghRuns||[]).map(r=>`<div class="card"><div class="row"><div class="grow"><div class="title">${esc(r.name)} <span class="mini">${esc(r.event)}</span></div>
+    <div class="sub">${fmtDay(r.created_at)}, ${fmtTime(r.created_at)}</div></div>
+    <span class="pill ${r.conclusion==="success"?"posted":r.conclusion==="failure"?"failed":"scheduled"}">${esc(r.conclusion||r.status)}</span></div>
+    ${r.html_url?`<a class="mini" href="${esc(r.html_url)}" target="_blank" rel="noopener">Open logs</a>`:""}</div>`).join("") || `<div class="empty">No runs yet.</div>`;
+  $("runlog").innerHTML = (S.runs.runs||[]).slice(0,15).map(r=>`<div class="card"><div class="row"><div class="grow"><b>${esc(r.kind)}</b> <span class="mini">${fmtDay(r.at)}, ${fmtTime(r.at)}</span><div class="sub">${esc(r.summary)}</div>
+    ${(r.errors||[]).length?`<div class="err">${esc(r.errors.join(" | ").slice(0,300))}</div>`:""}</div><span class="pill ${r.ok?"posted":"failed"}">${r.ok?"ok":"error"}</span></div></div>`).join("") || `<div class="empty">Nothing yet.</div>`;
+  renderSetup();
+  $("whoami").textContent = DEMO ? "Demo mode (sample data, nothing is saved)" : "Connected to "+repo();
+}
+
+function openPost(id){
+  const p = S.posts.find(x=>x.id===id); if(!p) return;
+  const cap = (p.caption||"") + (p.hashtags?.length ? "\n\n"+p.hashtags.map(t=>"#"+t).join(" ") : "");
+  const acts = [];
+  if(p.status==="pending_approval") acts.push(`<button class="btn ok" onclick="cmd('approve','${p.id}','Approved')">Approve</button>`);
+  if(["scheduled","pending_approval"].includes(p.status)) acts.push(`<button class="btn" onclick="cmd('post_now','${p.id}','Posting now')">Post now</button>`, `<button class="btn bad" onclick="cmd('skip','${p.id}','Skipped')">Skip</button>`);
+  if(p.status==="failed") acts.push(`<button class="btn pri" onclick="cmd('retry','${p.id}','Retrying')">Retry</button>`, `<button class="btn bad" onclick="cmd('skip','${p.id}','Skipped')">Skip</button>`);
+  if(p.status==="inbox") acts.push(`<button class="btn pri" onclick="copyCap('${p.id}')">Copy caption</button>`, `<a class="btn" style="text-align:center;text-decoration:none" href="https://www.tiktok.com/" target="_blank" rel="noopener">Open TikTok</a>`, `<button class="btn ok" onclick="cmd('mark_published','${p.id}','Marked published')">Mark published</button>`);
+  if(p.url) acts.push(`<a class="btn" style="text-align:center;text-decoration:none" href="${esc(p.url)}" target="_blank" rel="noopener">View post</a>`);
+  const m = p.metrics||{};
+  $("sheetBody").innerHTML = `
+    <div class="row"><div class="grow"><div class="plat ${p.platform}">${PLAT[p.platform]}</div><div class="title" style="font-size:18px">${esc(p.series_name)} · Part ${p.episode}</div>
+    <div class="sub">${p.posted_at?"Posted "+fmtDay(p.posted_at)+", "+fmtTime(p.posted_at):"Scheduled "+fmtDay(p.scheduled_at)+", "+fmtTime(p.scheduled_at)} · ${p.duration||"?"}s</div></div>
+    <span class="pill ${p.status}">${STATUS[p.status]||p.status}</span></div>
+    <div style="height:12px"></div>
+    <video src="${esc(p.video_url)}" poster="${esc(p.thumb_url)}" controls playsinline preload="none"></video>
+    <a class="mini" href="${esc(p.video_url)}" target="_blank" rel="noopener">Open video file</a>
+    ${p.error?`<div class="err">${esc(p.error)}</div>`:""}${p.warning?`<div class="warnt">${esc(p.warning)}</div>`:""}
+    ${m.views!=null?`<div class="metrics" style="font-size:14px;margin-top:10px"><span><b>${fmtN(m.views)}</b> views</span><span><b>${fmtN(m.likes)}</b> likes</span><span><b>${fmtN(m.comments)}</b> comments</span>${m.shares!=null?`<span><b>${fmtN(m.shares)}</b> shares</span>`:""}</div>`:""}
+    <label>Caption</label><textarea readonly id="capBox">${esc(cap)}</textarea>
+    ${p.platform==="youtube"&&p.yt_title?`<label>YouTube title</label><input readonly value="${esc(p.yt_title)}">`:""}
+    <div style="height:14px"></div><div class="btns">${acts.join("")}</div>
+    <div class="mini" style="margin-top:12px">ID ${esc(p.id)} · attempts ${p.attempts||0}</div>`;
+  openSheet();
+}
+async function copyCap(){ const t=$("capBox"); try{ await navigator.clipboard.writeText(t.value); }catch(e){ t.select(); document.execCommand("copy"); } toast("Caption copied"); }
+
+function openSheet(){ $("sheetBg").style.display="block"; requestAnimationFrame(()=>$("sheet").classList.add("on")); }
+function closeSheet(){ $("sheet").classList.remove("on"); setTimeout(()=>$("sheetBg").style.display="none",200); }
+
+const VOICES = [["am_onyx","Onyx (deep male)"],["am_michael","Michael (male)"],["am_fenrir","Fenrir (male)"],["bm_george","George (British male)"],["bm_lewis","Lewis (British male)"],["af_heart","Heart (female)"]];
+function editSeries(id){
+  const sr = id ? S.series.find(s=>s.id===id) : {id:"", name:"", premise:"", place:"", tone:"", voice:"am_onyx", music:"pulse", active:true};
+  $("sheetBody").innerHTML = `<div class="title" style="font-size:18px">${id?"Edit series":"New series"}</div>
+    <label>Name</label><input id="eName" value="${esc(sr.name)}" placeholder="Floor 14">
+    <label>Premise (who you are, where, what is happening)</label><textarea id="ePrem">${esc(sr.premise)}</textarea>
+    <label>HUD place (top-left label)</label><input id="ePlace" value="${esc(sr.place)}" placeholder="FLOOR 14">
+    <label>Tone</label><input id="eTone" value="${esc(sr.tone)}" placeholder="tense, survival rules, real facts">
+    <label>Voice</label><select id="eVoice">${VOICES.map(v=>`<option value="${v[0]}" ${sr.voice===v[0]?"selected":""}>${v[1]}</option>`).join("")}</select>
+    <label>Music</label><select id="eMusic">${["pulse","drone","none"].map(m=>`<option ${sr.music===m?"selected":""}>${m}</option>`).join("")}</select>
+    <div style="height:14px"></div><div class="btns"><button class="btn pri" onclick="saveSeries('${id||""}')">Save</button><button class="btn" onclick="closeSheet()">Cancel</button></div>
+    ${id?`<p class="mini" style="margin-top:12px">Changing the premise affects the next episode. Past episodes stay as they are.</p>`:""}`;
+  openSheet();
+}
+async function saveSeries(id){
+  const name = $("eName").value.trim(), premise = $("ePrem").value.trim();
+  if(!name || premise.length < 30){ toast("Add a name and a longer premise"); return; }
+  const list = S.series.slice();
+  const data = {name, premise, place:$("ePlace").value.trim().toUpperCase(), tone:$("eTone").value.trim(), voice:$("eVoice").value, music:$("eMusic").value};
+  if(id){ Object.assign(list.find(s=>s.id===id), data); }
+  else{
+    let nid = name.toLowerCase().replace(/[^a-z0-9]+/g,"").slice(0,16) || "series";
+    while(list.some(s=>s.id===nid)) nid += "x";
+    list.push({id:nid, active:true, ...data});
+  }
+  try{ await writeJSON("config/series.json", list, (id?"edit":"add")+" series "+name); S.series=list; closeSheet(); render(); toast("Saved"); }
+  catch(e){ toast("Save failed: "+e.message); }
+}
+async function toggleSeries(id){
+  const list = S.series.map(s=>s.id===id?{...s, active:s.active===false}:s);
+  try{ await writeJSON("config/series.json", list, "toggle series "+id); S.series=list; render(); }catch(e){ toast("Save failed: "+e.message); }
+}
+async function setSetting(k, v){
+  const s = {...S.settings, [k]:v};
+  try{ await writeJSON("config/settings.json", s, "settings: "+k); S.settings=s; render(); toast("Saved"); }catch(e){ toast("Save failed: "+e.message); }
+}
+function togglePlat(k){ const p = JSON.parse(JSON.stringify(S.settings.platforms||{})); p[k] = {...(p[k]||{}), enabled:!p[k]?.enabled}; setSetting("platforms", p); }
+function setTikTokMode(m){
+  if(m==="direct" && !confirm("Only switch after TikTok approves your app's audit. Before that, TikTok forces direct posts to private. Switch?")){ render(); return; }
+  const p = JSON.parse(JSON.stringify(S.settings.platforms||{})); p.tiktok = {...(p.tiktok||{}), mode:m}; setSetting("platforms", p);
+}
+
+function doLogin(){
+  const r = $("lRepo").value.trim().replace(/^https:\/\/github.com\//,"").replace(/\/$/,""), t = $("lTok").value.trim();
+  if(!/^[\w.-]+\/[\w.-]+$/.test(r) || t.length < 20){ toast("Check the repo name and token"); return; }
+  store.set("as_repo", r); store.set("as_tok", t); start();
+}
+function logout(){ store.del("as_tok"); store.del("as_repo"); location.href = location.pathname; }
+function show(v){
+  document.querySelectorAll(".view").forEach(x=>x.classList.toggle("on", x.id==="v-"+v));
+  document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on", b.dataset.v===v));
+  window.scrollTo(0,0);
+}
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>show(b.dataset.v));
+
+function start(){
+  const m = location.hostname.match(/^([\w-]+)\.github\.io$/), seg = location.pathname.split("/").filter(Boolean)[0];
+  if(m && seg && !$("lRepo").value) $("lRepo").value = m[1]+"/"+seg;
+  if(!DEMO && (!repo() || !tok())){ $("nav").style.display="none"; $("login").classList.add("on"); return; }
+  $("login").classList.remove("on"); $("nav").style.display="flex"; show(location.hash.slice(1)||"today");
+  load().then(()=>{ finishOAuth();
+    if(!DEMO && !S.secretsErr && !has("GH_PAT")) saveSecrets({GH_PAT: tok()}); if(!DEMO && !location.hash && ["bot","claude","instagram","youtube","tiktok"].some(k=>stepState(k)!=="done")) show("setup"); });
+  setInterval(()=>{ if(document.visibilityState==="visible") load(); }, 120000);
+}
+
+// ---------------------------------------------------------------- setup
+const BASE = location.origin + location.pathname.replace(/[^/]*$/, "");
+const CALLBACK = BASE + "callback.html";
+const has = n => (S.secrets||[]).includes(n);
+const H = k => (S.health||{})[k];
+function stepState(k){
+  const ok = {
+    bot: has("GH_PAT"),
+    claude: has("ANTHROPIC_API_KEY") && H("claude")?.ok !== false,
+    instagram: has("IG_ACCESS_TOKEN") && H("instagram")?.ok,
+    youtube: has("YT_REFRESH_TOKEN") && H("youtube")?.ok,
+    tiktok: has("TT_REFRESH_TOKEN") && H("tiktok")?.ok,
+    test: ["instagram","youtube","tiktok","claude"].every(x=>H(x)?.ok)
+  }[k];
+  const started = {instagram:has("IG_ACCESS_TOKEN"), youtube:has("YT_CLIENT_ID"), tiktok:has("TT_CLIENT_KEY")}[k];
+  return ok ? "done" : started ? "started" : "todo";
+}
+const copyBtn = t => `<button class="btn sm" onclick="navigator.clipboard.writeText('${esc(t)}').then(()=>toast('Copied'),()=>toast('Copy failed'))">Copy</button>`;
+const field = (id, label, ph) => `<label>${label}</label><input id="${id}" type="password" autocomplete="off" autocapitalize="off" placeholder="${ph||""}">`;
+const ol = items => `<ol class="mini" style="padding-left:18px;margin:8px 0;line-height:1.6">${items.map(i=>`<li>${i}</li>`).join("")}</ol>`;
+const link = (u, t) => `<a href="${u}" target="_blank" rel="noopener">${t||u.replace(/^https:\/\//,"")}</a>`;
+const redirectBox = () => `<label>Redirect URI (paste this into their site)</label><div class="row"><input readonly value="${esc(CALLBACK)}">${copyBtn(CALLBACK)}</div>`;
+function stepCard(k, n, title, body){
+  const st = stepState(k);
+  const pill = st==="done" ? `<span class="pill posted">Done</span>` : st==="started" ? `<span class="pill inbox">In progress</span>` : `<span class="pill">To do</span>`;
+  const h = H(k); const det = h && !h.ok && k!=="test" ? `<div class="err">${esc(h.detail)}</div>` : "";
+  return `<details class="card" ${st!=="done" && !window._openedStep ? (window._openedStep=1,"open") : ""}><summary class="row" style="list-style:none;cursor:pointer"><b style="color:var(--mut);width:18px">${n}</b><div class="grow"><b>${title}</b></div>${pill}</summary>${det}<div style="margin-top:8px">${body}</div></details>`;
+}
+function renderSetup(){
+  window._openedStep = 0;
+  const done = ["bot","claude","instagram","youtube","tiktok","test"].filter(k=>stepState(k)==="done").length;
+  $("setupBanner").innerHTML = done < 6 ? `<div class="card" style="border-color:rgba(122,150,255,.5)" onclick="show('setup')"><div class="row"><div class="grow"><b>Finish setup</b><div class="sub">${done} of 6 steps done</div></div><span class="pill scheduled">Open</span></div><div class="bar"><div style="width:${done/6*100}%;background:#9ab4ff"></div></div></div>` : "";
+  const oauth = (S.settings.oauth||{});
+  $("setupList").innerHTML = (S.secretsErr ? `<div class="card err">Can't read secrets: ${esc(S.secretsErr)}. Your GitHub token needs Secrets: Read and write. Disconnect in System and make a new one.</div>` : "") + [
+    stepCard("bot", 1, "Let the bot save its own logins", `<p class="mini">Stores this phone's GitHub token as <b>GH_PAT</b> so the bot can refresh Instagram and TikTok logins by itself.</p><button class="btn pri" style="width:100%" onclick="saveSecrets({GH_PAT: tok()})">Save</button>`),
+    stepCard("claude", 2, "Claude API key", ol([`Open ${link("https://console.anthropic.com/settings/keys")}, create a key.`, `In Billing, add credit and set a monthly limit (for example $20).`, `Paste the key below.`]) + field("kClaude","Anthropic API key","sk-ant-...") + `<div style="height:10px"></div><button class="btn pri" style="width:100%" onclick="saveField('kClaude','ANTHROPIC_API_KEY')">Save</button>`),
+    stepCard("instagram", 3, "Instagram", ol([
+      `In the Instagram app: Settings > Account type and tools > <b>Switch to professional account</b> > Creator.`,
+      `Open ${link("https://developers.facebook.com/apps")} > <b>Create app</b>. Pick the Instagram use case ("Manage messaging and content on Instagram" or similar).`,
+      `In the app: Instagram > <b>API setup with Instagram login</b>. Under Generate access tokens, click <b>Add account</b> and log in to your Instagram.`,
+      `If asked, accept the tester invite in Instagram: Settings > Apps and websites > Tester invites.`,
+      `Click <b>Generate token</b>, copy it, paste below. Leave the app in Development mode.`]) + field("kIG","Instagram access token","IGAA...") + `<div style="height:10px"></div><button class="btn pri" style="width:100%" onclick="saveField('kIG','IG_ACCESS_TOKEN',true)">Save and test</button>`),
+    stepCard("youtube", 4, "YouTube", ol([
+      `Open ${link("https://console.cloud.google.com/projectcreate")} and create a project named ai-stories.`,
+      `Enable ${link("https://console.cloud.google.com/apis/library/youtube.googleapis.com","YouTube Data API v3")}.`,
+      `Open ${link("https://console.cloud.google.com/auth/overview","Google Auth Platform")} > Get started. User type: <b>External</b>. Then Audience > <b>Publish app</b> (otherwise the login dies in 7 days).`,
+      `Clients > <b>Create client</b> > Web application. Under Authorized redirect URIs add the address below.`,
+      `Paste the Client ID and Client secret here, tap Save, then Sign in with Google. Google will say the app is unverified: tap Advanced > Go to ai-stories (it is your own app).`]) + redirectBox()
+      + `<label>Client ID</label><input id="kYTid" autocapitalize="off" value="${esc(oauth.youtube_client_id||"")}" placeholder="....apps.googleusercontent.com">` + field("kYTsec","Client secret","GOCSPX-...")
+      + `<div class="btns" style="margin-top:10px"><button class="btn" onclick="saveClient('youtube')">Save</button><button class="btn pri" ${oauth.youtube_client_id&&has("YT_CLIENT_SECRET")?"":"disabled"} onclick="startOAuth('youtube')">Sign in with Google</button></div>`),
+    stepCard("tiktok", 5, "TikTok", ol([
+      `Open ${link("https://developers.tiktok.com/apps")} > <b>Connect an app</b> (Individual developer).`,
+      `Add products <b>Login Kit</b> and <b>Content Posting API</b>. Scopes: user.info.basic, video.upload, video.list.`,
+      `In Login Kit, add the redirect URI below.`,
+      `Open the <b>Sandbox</b> tab, create a sandbox, and add your TikTok account under Target users.`,
+      `Paste the Client key and Client secret here, tap Save, then Sign in with TikTok. Videos arrive as drafts in your TikTok inbox.`]) + redirectBox()
+      + `<label>Client key</label><input id="kTTid" autocapitalize="off" value="${esc(oauth.tiktok_client_key||"")}">` + field("kTTsec","Client secret","")
+      + `<div class="btns" style="margin-top:10px"><button class="btn" onclick="saveClient('tiktok')">Save</button><button class="btn pri" ${oauth.tiktok_client_key&&has("TT_CLIENT_SECRET")?"":"disabled"} onclick="startOAuth('tiktok')">Sign in with TikTok</button></div>`),
+    stepCard("test", 6, "Test and make the first episode", `<p class="mini">Test checks every login (about 1 minute). Then build one episode and use <b>Post now</b> on it to prove each platform works.</p>
+      <div class="dots" style="margin-bottom:10px">${["instagram","youtube","tiktok","claude"].map(k=>`<span class="dot ${H(k)?(H(k).ok?"ok":"bad"):""}"><i></i>${k==="claude"?"Claude":PLAT[k]}</span>`).join("")}</div>
+      <div class="btns"><button class="btn" onclick="dispatch('tick.yml',{command:'check',post_id:''},'Testing connections. About 1 minute.')">Test connections</button><button class="btn pri" onclick="dispatch('build.yml',{series:'homedepot'},'Building the first episode. About 10 minutes.')">Build first episode</button></div>`)
+  ].join("");
+}
+async function saveSecrets(map, test){
+  if(DEMO){ toast("Demo: saved"); return true; }
+  try{
+    const key = await gh(`/repos/${repo()}/actions/secrets/public-key`);
+    for(const [name, value] of Object.entries(map)){
+      if(!value) throw new Error(name+" is empty");
+      await gh(`/repos/${repo()}/actions/secrets/${name}`, {method:"PUT", body:JSON.stringify({encrypted_value: window.sealSecret(key.key, value), key_id:key.key_id})});
+      if(!S.secrets.includes(name)) S.secrets.push(name);
+    }
+    toast("Saved securely"); render();
+    if(test) dispatch("tick.yml",{command:"check",post_id:""},"Saved. Testing it now, about 1 minute.");
+    return true;
+  }catch(e){ toast("Save failed: "+e.message); return false; }
+}
+function saveField(id, name, test){ const v = $(id).value.trim(); if(!v){ toast("Paste it first"); return; } saveSecrets({[name]: v}, test).then(ok=>{ if(ok) $(id).value=""; }); }
+async function saveClient(p){
+  const id = $(p==="youtube"?"kYTid":"kTTid").value.trim(), sec = $(p==="youtube"?"kYTsec":"kTTsec").value.trim();
+  if(!id || !sec){ toast("Paste both values"); return; }
+  const names = p==="youtube" ? {YT_CLIENT_ID:id, YT_CLIENT_SECRET:sec} : {TT_CLIENT_KEY:id, TT_CLIENT_SECRET:sec};
+  if(!await saveSecrets(names)) return;
+  const st = {...S.settings, oauth:{...(S.settings.oauth||{}), [p==="youtube"?"youtube_client_id":"tiktok_client_key"]: id}};
+  try{ await writeJSON("config/settings.json", st, "setup: "+p+" client id"); S.settings = st; render(); toast("Saved. Now tap Sign in."); }catch(e){ toast("Save failed: "+e.message); }
+}
+function startOAuth(p){
+  const o = S.settings.oauth||{}, state = "as_"+p+"_"+Math.random().toString(36).slice(2,10);
+  store.set("as_oauth_state", state);
+  location.href = p==="youtube"
+    ? "https://accounts.google.com/o/oauth2/v2/auth?"+new URLSearchParams({client_id:o.youtube_client_id, redirect_uri:CALLBACK, response_type:"code", access_type:"offline", prompt:"consent", state,
+        scope:"https://www.googleapis.com/auth/youtube.upload https://www.googleapis.com/auth/youtube.readonly"})
+    : "https://www.tiktok.com/v2/auth/authorize/?"+new URLSearchParams({client_key:o.tiktok_client_key, redirect_uri:CALLBACK, response_type:"code", state, scope:"user.info.basic,video.upload,video.list"});
+}
+async function finishOAuth(){
+  let r; try{ r = JSON.parse(store.get("as_oauth_result")||"null"); }catch(e){}
+  if(!r) return;
+  store.del("as_oauth_result");
+  const p = (r.state||"").split("_")[1];
+  if(r.state !== store.get("as_oauth_state") || !["youtube","tiktok"].includes(p)){ toast("Sign-in check failed. Try again."); return; }
+  if(r.error){ toast("Sign-in cancelled: "+r.error); return; }
+  show("setup");
+  if(await saveSecrets({OAUTH_CODE: r.code}))
+    dispatch("connect.yml", {provider:p, redirect_uri:CALLBACK}, "Connecting "+PLAT[p]+". About 1 minute.");
+}
+
+let DEMO_DATA = {};
+if(DEMO){
+  const H = 36e5, now = Date.now(), iso = t => new Date(t).toISOString();
+  const thumb = "data:image/svg+xml;utf8,"+encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 16'><rect width='9' height='16' fill='#18202a'/><circle cx='4.5' cy='7' r='1.2' fill='#f4efe6'/><rect x='4.2' y='8' width='.6' height='3' fill='#f4efe6'/></svg>");
+  const ser = [["homedepot","Home Depot Outbreak"],["floor14","Floor 14"],["deadzone","Dead Zone Road Trip"]];
+  const posts = [];
+  for(let d=6; d>=0; d--) ser.forEach(([id,name],i)=>["instagram","youtube","tiktok"].forEach((pl,j)=>{
+    const t = now - d*24*H + (i*3+j-8)*H;
+    const done = t < now;
+    posts.push({id:`${id}-${String(8-d).padStart(3,"0")}-${pl}`, series:id, series_name:name, episode:8-d, platform:pl, status: done ? (pl==="tiktok"&&d===0?"inbox":"posted") : "scheduled",
+      scheduled_at:iso(t), posted_at: done?iso(t):null, thumb_url:thumb, video_url:"#", duration:41.2, caption:"Would you trust the radio? Comment POLICE or BASE.", hashtags:["aistories","survival","zombie"],
+      metrics: done && d>0 ? {views: Math.round(800+ (i+1)*900*Math.abs(Math.sin(d*7+j))), likes: Math.round(60+i*40+d*9), comments: Math.round(10+j*7)} : null, attempts:1});
+  }));
+  posts[posts.length-2].status="failed"; posts[posts.length-2].error="Instagram create container: Application request limit reached"; posts[posts.length-2].posted_at=null;
+  DEMO_DATA = {
+    "state/posts.json": posts,
+    "state/runs.json": {runs:[{kind:"build",at:iso(now-12*H),ok:true,summary:"built 3/3: homedepot part 8, floor14 part 8, deadzone part 8",errors:[]},{kind:"post",at:iso(now-2*H),ok:false,summary:"posted 1",errors:["deadzone-008-youtube: quota"]}]},
+    "state/usage.json": {[new Date().toLocaleDateString("en-CA",{timeZone:"America/Los_Angeles"}).slice(0,7)]:{usd:6.42,calls:58,output_tokens:420000,by_purpose:{write:5.1,qa:0.62,revise:0.7}}},
+    "state/best_hours.json": {instagram:[{hour:12,score:1.1,posts:6},{hour:18,score:1.35,posts:7},{hour:20,score:0.9,posts:6}],youtube:[{hour:14,score:0.95,posts:6},{hour:17,score:1.2,posts:7},{hour:19,score:1.05,posts:6}],tiktok:[{hour:9,score:0.8,posts:5},{hour:19,score:1.25,posts:7},{hour:21,score:1.1,posts:6}]},
+    "state/health.json": {at:iso(now-5*H),instagram:{ok:true,detail:"user 1784"},youtube:{ok:true,detail:"channel AI Stories"},tiktok:{ok:true,detail:"user aistories"},claude:{ok:true,detail:"key set"}},
+    "config/settings.json": {channel:"AI Stories",timezone:"America/Los_Angeles",approval:"auto",platforms:{instagram:{enabled:true},youtube:{enabled:true},tiktok:{enabled:true,mode:"inbox"}},monthly_budget_usd:20,vision_qa:true},
+    "config/series.json": ser.map(([id,name])=>({id,name,active:true,premise:"Demo premise for "+name+". You are trapped and must survive.",place:name.toUpperCase(),voice:"am_onyx",music:"pulse"})),
+    secrets: ["GH_PAT","ANTHROPIC_API_KEY","IG_ACCESS_TOKEN","YT_CLIENT_ID","YT_CLIENT_SECRET"],
+    runsGH: [{name:"tick",event:"schedule",created_at:iso(now-40*60e3),conclusion:"success",html_url:"#"},{name:"build",event:"schedule",created_at:iso(now-12*H),conclusion:"success",html_url:"#"}]
+  };
+  ser.forEach(([id])=>DEMO_DATA[`state/episodes/${id}.json`]={episodes:[{n:8,synopsis:"You reach the gate at dawn, but the guards are gone and the fence is humming.",cliffhanger:"Climb the live fence or wait for the patrol truck?"}]});
+}
+start();
+</script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+name: connect
+# Started by the dashboard after you sign in to YouTube or TikTok on your phone.
+# The one-time sign-in code arrives as the OAUTH_CODE secret, never as a visible input.
+on:
+  workflow_dispatch:
+    inputs:
+      provider:
+        description: "youtube or tiktok"
+        required: true
+      redirect_uri:
+        description: "The callback page URL used for sign-in"
+        required: true
+permissions:
+  contents: write
+concurrency:
+  group: state
+  cancel-in-progress: false
+jobs:
+  connect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -q requests pynacl tzdata
+      - name: Exchange code for a token
+        env:
+          OAUTH_CODE: ${{ secrets.OAUTH_CODE }}
+          GH_PAT: ${{ secrets.GH_PAT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          TT_CLIENT_KEY: ${{ secrets.TT_CLIENT_KEY }}
+          TT_CLIENT_SECRET: ${{ secrets.TT_CLIENT_SECRET }}
+          PROVIDER: ${{ inputs.provider }}
+          REDIRECT: ${{ inputs.redirect_uri }}
+        run: |
+          case "$PROVIDER" in youtube|tiktok) ;; *) echo "bad provider"; exit 1;; esac
+          python -m autopost connect "$PROVIDER" --redirect "$REDIRECT"
+      - name: Save state
+        if: always()
+        run: bash scripts/commit_state.sh "connect"

@@ -1,0 +1,234 @@
+{
+ "slug": "zombie_homedepot",
+ "voice": "am_onyx",
+ "speed": 1.05,
+ "el_voice": "Brian",
+ "music": "pulse",
+ "music_vol": 0.2,
+ "cap_y": 1020,
+ "hud": {
+  "day": "DAY 1",
+  "place": "HARDWARE STORE"
+ },
+ "scenes": [
+  {
+   "text": "*Imagine* you're inside a Home Depot when the outbreak starts.",
+   "time": "2:14 PM",
+   "build": "\nconst rnd=(seed)=>{let s=seed;return()=>((s=(s*9301+49297)%233280)/233280)};\nwindow.H={rnd:rnd,n:0};\nH.uid=(p)=>p+(H.n++);\nH.SV=(inner)=>`<svg class=layer viewBox='0 0 1080 1920' width=1080 height=1920>${inner}</svg>`;\nH.Z1={torso:10,head:16,uaL:-80,laL:-8,uaR:-100,laR:-12,ulL:-20,llL:22,ulR:16,llR:0};\nH.Z2={torso:10,head:16,uaL:-80,laL:-8,uaR:-100,laR:-12,ulL:16,llL:0,ulR:-20,llR:22};\nH.ZB={torso:0,head:10,uaL:155,laL:25,uaR:-155,laR:-25,ulL:4,llL:0,ulR:-4,llR:0};\nH.ZB2={torso:0,head:10,uaL:118,laL:35,uaR:-118,laR:-35,ulL:4,llL:0,ulR:-4,llR:0};\nH.zomb=(id,x,y,s,flip,tone)=>R.stick(id,{x:x,y:y,s:s,flip:!!flip,color:tone||'#7d9a70',stroke:'#0f1a12',face:'shock',w:22});\nH.zwalk=(tl,id,toX,t,dur,step)=>{step=step||0.5;let k=0;for(let tt=t;tt<t+dur-0.01;tt+=step,k++)R.pose(tl,id,k%2?H.Z2:H.Z1,tt,step,'sine.inOut');R.move(tl,id,{x:toX},t,dur);};\nH.flash=(tl,p,S,D,every)=>{every=every||0.28;let k=0;for(let t=S;t<S+D;t+=every,k++){tl.set('#'+p+'a',{opacity:k%2?0.15:1},t);tl.set('#'+p+'b',{opacity:k%2?1:0.15},t);tl.set('#'+p+'ga',{opacity:k%2?0.1:0.9},t);tl.set('#'+p+'gb',{opacity:k%2?0.9:0.1},t);}};\nH.cart=(x,y,s)=>`<g transform='translate(${x},${y}) scale(${s})'><polygon points='-110,-150 120,-150 95,-60 -85,-60' fill='#cfd3da' opacity='.92' stroke='#6a707a' stroke-width='6'/><g stroke='#6a707a' stroke-width='4'><line x1='-60' y1='-150' x2='-48' y2='-60'/><line x1='-10' y1='-150' x2='-8' y2='-60'/><line x1='40' y1='-150' x2='32' y2='-60'/><line x1='90' y1='-150' x2='72' y2='-60'/><line x1='-100' y1='-105' x2='108' y2='-105'/></g><line x1='-110' y1='-150' x2='-150' y2='-200' stroke='#e03a2b' stroke-width='12' stroke-linecap='round'/><line x1='-168' y1='-200' x2='-124' y2='-200' stroke='#e03a2b' stroke-width='14' stroke-linecap='round'/><line x1='-70' y1='-60' x2='-70' y2='-44' stroke='#6a707a' stroke-width='6'/><line x1='80' y1='-60' x2='80' y2='-44' stroke='#6a707a' stroke-width='6'/><circle cx='-70' cy='-30' r='16' fill='#222'/><circle cx='80' cy='-30' r='16' fill='#222'/></g>`;\nH.fence=(x,y,w,h)=>{const id=H.uid('mh');let s=`<defs><pattern id='${id}' width='22' height='22' patternUnits='userSpaceOnUse'><path d='M0 0 L22 22 M22 0 L0 22' stroke='#a9b2bb' stroke-width='2'/></pattern></defs><rect x='${x}' y='${y}' width='${w}' height='${h}' fill='url(#${id})' opacity='.75'/>`;\n for(let px=x;px<=x+w;px+=130)s+=`<rect x='${px-5}' y='${y-14}' width='10' height='${h+14}' fill='#59616b'/>`;\n s+=`<rect x='${x}' y='${y}' width='${w}' height='6' fill='#59616b'/>`;\n let pts='';for(let i=0;i<=w/16;i++)pts+=`${x+i*16},${y-8-(i%2)*14} `;\n s+=`<polyline points='${pts}' fill='none' stroke='#c9ced6' stroke-width='3'/>`;return s;};\nH.aisle=(seed)=>{\n const r=rnd(seed);\n const cols=['#e8e6df','#3b6fb6','#f2c230','#c93a2b','#8c8f96','#f6f1e3','#2f8f55','#d9d2c0'];\n const wall=(side)=>{\n  const P=(u,v)=>{const x=side<0?380*u:1080-380*u;const yt=200+560*u,yb=1920-880*u;return [x,yt+(yb-yt)*v];};\n  const Q=(u0,u1,v0,v1,f)=>`<polygon points='${P(u0,v0)} ${P(u1,v0)} ${P(u1,v1)} ${P(u0,v1)}' fill='${f}'/>`;\n  let s=Q(0,1,0,1,'#a8480c');\n  for(let lv=0;lv<5;lv++){const v1=0.2+lv*0.19;let u=0.02;\n   while(u<0.96){const u1=Math.min(0.97,u+0.05+r()*0.1);const h=0.07+r()*0.09;s+=Q(u,u1-0.006,v1-h,v1,cols[Math.floor(r()*cols.length)]);u=u1+0.01+r()*0.02;}\n   s+=Q(0,1,v1,v1+0.016,'#f26a1b');}\n  for(let k=0;k<=8;k++)s+=Q(k/8-0.005,k/8+0.005,0,1,'#f26a1b');\n  return s;};\n let lights='';\n for(const u of [0.08,0.26,0.44,0.6,0.74]){const u2=u+0.06;const w1=1080-760*u,w2=1080-760*u2;const y1=200+560*u,y2=200+560*u2;\n  lights+=`<polygon points='${540-0.22*w1},${y1} ${540+0.22*w1},${y1} ${540+0.22*w2},${y2} ${540-0.22*w2},${y2}' fill='#fff6d8'/>`;}\n let beams='';\n for(let k=1;k<9;k++){const u=k/9;const y=200+560*u;beams+=`<line x1='${380*u}' y1='${y}' x2='${1080-380*u}' y2='${y}' stroke='#4a4e57' stroke-width='${14*(1-u)+2}'/>`;}\n let fl='';\n for(let k=-6;k<=6;k++){fl+=`<line x1='${540+k*40}' y1='1040' x2='${540+k*200}' y2='1920' stroke='#77746e' stroke-width='3'/>`;}\n const gid=H.uid('fg');\n return `<defs><linearGradient id='${gid}' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#6e6b65'/><stop offset='1' stop-color='#a9a69e'/></linearGradient></defs><rect width='1080' height='1920' fill='#23252b'/><rect x='380' y='760' width='320' height='280' fill='#e6dfcc'/><polygon points='0,1920 1080,1920 700,1040 380,1040' fill='url(#${gid})'/>${fl}<polygon points='0,0 1080,0 1080,200 700,760 380,760 0,200' fill='#2a2c33'/>${beams}${wall(-1)}${wall(1)}<g class='lt'>${lights}</g>`;\n};\nH.police=(p,night,litP,seed)=>{\n const r=rnd(seed);\n const win=(x,y)=>{const on=r()<litP;return `<rect x='${x}' y='${y}' width='64' height='76' fill='${on?'#ffd36b':'#12151b'}' stroke='#20242c' stroke-width='6'/>`;};\n let s=`<defs><radialGradient id='${p}rr'><stop offset='0' stop-color='#ff2a2a' stop-opacity='.8'/><stop offset='1' stop-color='#ff2a2a' stop-opacity='0'/></radialGradient><radialGradient id='${p}rb'><stop offset='0' stop-color='#2a6cff' stop-opacity='.8'/><stop offset='1' stop-color='#2a6cff' stop-opacity='0'/></radialGradient></defs>`;\n s+=`<g id='${p}bld'><rect x='90' y='800' width='660' height='540' fill='${night?'#2d323d':'#5b6270'}'/><rect x='70' y='770' width='700' height='40' fill='${night?'#20242c':'#434956'}'/>`;\n for(let i=0;i<5;i++){s+=win(130+i*120,830)+win(130+i*120,1030);}\n s+=`<rect x='250' y='925' width='360' height='85' fill='#1f3a8a'/><text x='430' y='988' text-anchor='middle' font-family='Anton' font-size='66' fill='#fff' letter-spacing='8'>POLICE</text>`;\n const dl=litP>0.6?'#ffe9a8':'#0f1218';\n s+=`<rect x='366' y='1124' width='128' height='216' fill='#161a21' stroke='#20242c' stroke-width='8'/><rect x='376' y='1134' width='50' height='200' fill='${dl}'/><rect x='434' y='1134' width='50' height='200' fill='${dl}'/><rect x='60' y='1340' width='720' height='30' fill='#80858f'/>`;\n s+=`<line x1='700' y1='640' x2='700' y2='780' stroke='#9aa0aa' stroke-width='8'/><polygon points='704,646 780,662 704,684' fill='#2f4fa8'/></g>`;\n s+=`<ellipse cx='385' cy='1530' rx='200' ry='18' fill='#000' opacity='.4'/><rect x='215' y='1440' width='340' height='80' rx='24' fill='#15181f'/><polygon points='285,1442 330,1388 470,1388 515,1442' fill='#e9ecf1'/><rect x='215' y='1478' width='340' height='14' fill='#e9ecf1'/><circle cx='290' cy='1520' r='26' fill='#0a0a0c'/><circle cx='480' cy='1520' r='26' fill='#0a0a0c'/>`;\n s+=`<circle id='${p}ga' cx='375' cy='1378' r='190' fill='url(#${p}rr)'/><circle id='${p}gb' cx='435' cy='1378' r='190' fill='url(#${p}rb)'/><rect id='${p}a' x='350' y='1368' width='50' height='20' fill='#ff2a2a'/><rect id='${p}b' x='410' y='1368' width='50' height='20' fill='#2a6cff'/>`;\n return s;};\n\nreturn H.SV(H.aisle(5))+H.SV(R.stick('me0',{x:540,y:1740,s:1.2,face:'worried'}));",
+   "anim": "R.idle(tl,'me0',S,D);tl.to('#s0 .lt',{opacity:.55,duration:.12,repeat:7,yoyo:true,ease:'none'},S+0.8);",
+   "sfx": [
+    {
+     "id": "reverse_swell",
+     "at": 0,
+     "vol": 0.5
+    }
+   ]
+  },
+  {
+   "text": "Across the street, a *police station*.",
+   "time": "2:15 PM",
+   "build": "\nconst sk=`<div class=layer>${R.skyline({fire:true,night:true,seed:5,horizon:1350})}</div>`;\nconst street=`<rect y='1350' width='1080' height='570' fill='#1b1a24'/><rect y='1350' width='1080' height='14' fill='#3a3a46'/>`+[0,1,2,3,4,5].map(i=>`<rect x='${i*190}' y='1560' width='110' height='10' fill='#d9c36a' opacity='.55'/>`).join('');\nlet z='';\n[[220,1560,.9,0],[470,1640,1.05,1],[700,1520,.8,0],[900,1700,1.1,1],[320,1450,.6,0],[600,1440,.55,1]].forEach((a,i)=>{z+=H.zomb('z1_'+i,a[0],a[1],a[2],a[3],i%2?'#6e8f64':'#4f6b48');});\nconst frame=`<rect x='0' y='1790' width='1080' height='130' fill='#0e0f13'/><rect x='352' y='0' width='16' height='1800' fill='#0e0f13'/><rect x='712' y='0' width='16' height='1800' fill='#0e0f13'/><polygon points='120,0 300,0 90,1800 -90,1800' fill='#fff' opacity='.05'/>`;\nreturn sk+H.SV(street+H.police('p1',false,1,3))+H.SV(z)+H.SV(frame)+H.SV(R.stick('me1',{x:930,y:1880,s:1.0,flip:true,face:'worried'}));",
+   "anim": "R.set(tl,'me1','point',S);\n[[220,1],[470,-1],[700,1],[900,-1],[320,1],[600,-1]].forEach((a,i)=>{R.set(tl,'z1_'+i,H.Z1,S);H.zwalk(tl,'z1_'+i,a[0]+a[1]*110,S,D,0.55);});\nH.flash(tl,'p1',S,D);",
+   "sfx": [
+    {
+     "id": "pro_whoosh_big",
+     "at": 0,
+     "vol": 0.5
+    }
+   ]
+  },
+  {
+   "text": "Two miles past it, a _military base_.",
+   "time": "2:16 PM",
+   "build": "\nconst dashes=[0,1,2,3,4,5,6,7,8,9].map(i=>{const v0=Math.pow(i/10,1.6),v1=Math.pow((i+0.5)/10,1.6);const y0=1000+920*v0,y1=1000+920*v1,w0=2+16*v0,w1=2+16*v1;return `<polygon points='${540-w0},${y0} ${540+w0},${y0} ${540+w1},${y1} ${540-w1},${y1}' fill='#d9c36a'/>`;}).join('');\nconst base=`<defs><linearGradient id='sk2' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#1a1d33'/><stop offset='.55' stop-color='#7a3a3a'/><stop offset='1' stop-color='#f0a050'/></linearGradient><linearGradient id='bm2' x1='0' y1='0' x2='1' y2='0'><stop offset='0' stop-color='#ffe9a0' stop-opacity='.9'/><stop offset='1' stop-color='#ffe9a0' stop-opacity='0'/></linearGradient></defs>\n<rect width='1080' height='1920' fill='url(#sk2)'/><rect y='1000' width='1080' height='920' fill='#2f3526'/>\n<polygon points='470,1000 610,1000 1000,1920 80,1920' fill='#23232a'/>${dashes}\n<rect x='60' y='900' width='300' height='100' fill='#3c4733'/><rect x='80' y='930' width='40' height='24' fill='#ffd36b'/><rect x='150' y='930' width='40' height='24' fill='#ffd36b'/><rect x='700' y='870' width='220' height='130' fill='#3c4733'/><rect x='730' y='910' width='40' height='24' fill='#ffd36b'/>\n${H.fence(0,950,1080,60)}\n<rect x='466' y='950' width='12' height='60' fill='#2a3025'/><rect x='602' y='950' width='12' height='60' fill='#2a3025'/>\n<rect x='470' y='905' width='140' height='34' fill='#b31d1d'/><text x='540' y='929' text-anchor='middle' font-family='Anton' font-size='16' fill='#fff'>RESTRICTED AREA</text>\n<g><line x1='860' y1='1000' x2='880' y2='720' stroke='#2a3025' stroke-width='10'/><line x1='940' y1='1000' x2='920' y2='720' stroke='#2a3025' stroke-width='10'/><line x1='870' y1='900' x2='930' y2='830' stroke='#2a3025' stroke-width='6'/><rect x='850' y='690' width='100' height='40' fill='#2a3025'/><polygon points='840,690 960,690 900,640' fill='#1b2018'/><rect x='860' y='700' width='80' height='20' fill='#ffd36b'/></g>\n<polygon id='bm2' points='900,712 150,1180 460,1320' fill='url(#bm2)' opacity='.55'/>\n<g id='he2'><ellipse cx='700' cy='640' rx='70' ry='26' fill='#0d0f12'/><rect x='750' y='630' width='120' height='10' fill='#0d0f12'/><line x1='620' y1='606' x2='780' y2='606' stroke='#0d0f12' stroke-width='6'/><rect x='860' y='610' width='8' height='40' fill='#0d0f12'/></g>\n<rect x='350' y='380' width='380' height='96' rx='48' fill='#000' opacity='.65'/><text x='540' y='446' text-anchor='middle' font-family='Mono' font-weight='700' font-size='56' fill='#fff'>2 MILES</text>`;\nlet z='';\n[[380,1700,.95,0],[640,1620,.8,1],[560,1480,.55,0],[500,1340,.4,1],[590,1240,.28,0],[530,1150,.2,1]].forEach((a,i)=>{z+=H.zomb('z2_'+i,a[0],a[1],a[2],a[3],i<3?'#6e8f64':'#2f4231');});\nreturn H.SV(base)+H.SV(z);",
+   "anim": "[[380,1],[640,-1],[560,1],[500,-1],[590,1],[530,-1]].forEach((a,i)=>{R.set(tl,'z2_'+i,H.Z1,S);H.zwalk(tl,'z2_'+i,a[0]+a[1]*50,S,D,0.55);});\ntl.fromTo('#bm2',{rotation:-5,svgOrigin:'900 712'},{rotation:7,svgOrigin:'900 712',duration:D,ease:'sine.inOut'},S);\ntl.to('#he2',{x:-380,duration:D,ease:'none'},S);",
+   "sfx": [
+    {
+     "id": "pro_sub_drop",
+     "at": 0,
+     "vol": 0.6
+    }
+   ]
+  },
+  {
+   "text": "Rule one. *Lock* the doors and chain the carts.",
+   "time": "2:31 PM",
+   "banner": "RULE #1|LOCK THE DOORS",
+   "build": "\nconst bg=`<defs><linearGradient id='os3' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#2b1830'/><stop offset='.6' stop-color='#b3472b'/><stop offset='1' stop-color='#f08a3c'/></linearGradient></defs><rect width='1080' height='1920' fill='#3a3f48'/><rect y='1450' width='1080' height='470' fill='#6f6c66'/>`+[0,1,2,3,4,5,6].map(i=>`<line x1='${i*180}' y1='1450' x2='${540+(i-3)*420}' y2='1920' stroke='#58554f' stroke-width='3'/>`).join('')+`<rect x='200' y='560' width='680' height='890' fill='url(#os3)'/><rect x='200' y='1300' width='680' height='150' fill='#1b1a24'/>`;\nlet z='';[330,440,540,650,760].forEach((x,i)=>{z+=H.zomb('z3_'+i,x,1450,1.15,false,i%2?'#6e8f64':'#58784f');});\nconst glass=`<rect x='200' y='560' width='680' height='890' fill='#9fc7e0' opacity='.14'/><polygon points='230,560 360,560 250,1450 200,1450' fill='#fff' opacity='.08'/><g fill='none' stroke='#16181d' stroke-width='22'><rect x='200' y='560' width='680' height='890'/><line x1='540' y1='560' x2='540' y2='1450'/><line x1='200' y1='700' x2='880' y2='700'/></g><rect x='500' y='1000' width='14' height='260' rx='7' fill='#c9ced6'/><rect x='566' y='1000' width='14' height='260' rx='7' fill='#c9ced6'/>`;\nconst carts=H.cart(330,1640,1.1)+H.cart(540,1660,1.1)+H.cart(750,1640,1.1);\nconst chain=`<g id='ch3'><path d='M170 1410 Q540 1450 910 1410' stroke='#aab1bb' stroke-width='14' fill='none' stroke-dasharray='24 10'/><path d='M170 1404 Q540 1444 910 1404' stroke='#e6eaf0' stroke-width='4' fill='none' stroke-dasharray='24 10'/></g><g id='lk3' opacity='0'><rect x='510' y='1415' width='60' height='56' rx='10' fill='#d9b25a'/><path d='M522 1415 v-26 a18 18 0 0 1 36 0 v26' stroke='#d9b25a' stroke-width='10' fill='none'/></g>`;\nreturn H.SV(bg)+H.SV(z)+H.SV(glass)+H.SV(carts+chain)+H.SV(R.stick('me3',{x:100,y:1800,s:1.1,face:'worried'}));",
+   "anim": "R.walk(tl,'me3',190,S+0.1,0.9);R.pose(tl,'me3','push',S+1.1,.3);\nfor(let i=0;i<5;i++){R.set(tl,'z3_'+i,H.ZB,S);for(let k=0;k<6;k++){R.pose(tl,'z3_'+i,k%2?H.ZB:H.ZB2,S+0.3+k*0.4+i*0.07,0.2);}}\ntl.from('#ch3',{scaleX:0,svgOrigin:'170 1410',duration:1.2,ease:'power1.out'},S+0.9);\ntl.fromTo('#lk3',{opacity:0,scale:0,svgOrigin:'540 1440'},{opacity:1,scale:1,duration:.25,ease:'back.out(3)'},S+2.1);",
+   "sfx": [
+    {
+     "id": "knock",
+     "at": 0.7,
+     "vol": 0.8
+    },
+    {
+     "id": "knock",
+     "at": 1.3,
+     "vol": 0.8
+    },
+    {
+     "id": "pro_tap",
+     "at": 1.5,
+     "vol": 0.6
+    },
+    {
+     "id": "knock",
+     "at": 2.0,
+     "vol": 0.8
+    },
+    {
+     "id": "pro_tap",
+     "at": 2.15,
+     "vol": 0.7
+    }
+   ]
+  },
+  {
+   "text": "Rule two. _Never_ start a chainsaw. It's over a *hundred decibels*.",
+   "time": "3:05 PM",
+   "banner": "RULE #2|STAY QUIET",
+   "build": "\nconst rings=[0,1,2,3].map(i=>`<circle id='rg4_${i}' cx='540' cy='780' r='40' fill='none' stroke='#ff3b3b' stroke-width='10' opacity='0'/>`).join('');\nconst saw=`<g transform='translate(540,780) scale(1.15)'><rect x='34' y='-34' width='342' height='68' rx='34' fill='#9aa0a8'/><rect x='34' y='-34' width='342' height='68' rx='34' fill='none' stroke='#222' stroke-width='8' stroke-dasharray='10 8'/><rect x='-230' y='-100' width='290' height='190' rx='34' fill='#f26a1b'/><rect x='-200' y='-70' width='200' height='60' rx='14' fill='#c9520f'/><circle cx='-20' cy='45' r='24' fill='#222'/><path d='M-200 -100 C-200 -190 -40 -190 -40 -100' stroke='#222' stroke-width='22' fill='none'/><path d='M-230 -50 L-330 40 L-250 110' stroke='#222' stroke-width='22' fill='none'/><rect x='-120' y='60' width='60' height='22' rx='8' fill='#e03a2b'/></g>`;\nlet z='';[[540,1040,.32],[470,1050,.3],[610,1048,.3],[510,1060,.36],[575,1062,.34]].forEach((a,i)=>{z+=H.zomb('z4_'+i,a[0],a[1],a[2],false,'#2b3a2e');});\nreturn H.SV(H.aisle(8))+`<div class=layer style='background:rgba(0,0,0,.35)'></div>`+H.SV(z)+H.SV(rings+saw)+H.SV(R.stick('me4',{x:170,y:1780,s:1.0,face:'shock'}));",
+   "anim": "R.set(tl,'me4','scared',S);\nfor(let i=0;i<4;i++){tl.fromTo('#rg4_'+i,{attr:{r:40},opacity:.9},{attr:{r:520},opacity:0,duration:1.2,ease:'power1.out'},S+0.7+i*0.35);}\n[0,1,2,3,4].forEach(i=>{R.set(tl,'z4_'+i,H.Z1,S);H.zwalk(tl,'z4_'+i,(i-2)*90+540,S+0.8,D-0.8,0.5);R.move(tl,'z4_'+i,{s:0.9,y:1560},S+0.8,D-0.8,'power2.in');});",
+   "sfx": [
+    {
+     "id": "pro_riser",
+     "at": 0.2,
+     "vol": 0.4
+    },
+    {
+     "id": "pro_impact",
+     "at": 2.6,
+     "vol": 0.7
+    }
+   ]
+  },
+  {
+   "text": "Rule three. Grab *water*, rope, and a crowbar.",
+   "time": "3:40 PM",
+   "banner": "RULE #3|GRAB THREE THINGS",
+   "build": "\nconst card=(x)=>`<rect x='${x}' y='640' width='280' height='300' rx='28' fill='#000' opacity='.55' stroke='#c8f03c' stroke-width='5'/>`;\nconst water=`<g id='it5_0'>${card(70)}<g transform='translate(210,790)'><rect x='-60' y='-100' width='120' height='170' rx='26' fill='#5fb4e8' stroke='#2b6f9b' stroke-width='6'/><rect x='-24' y='-132' width='48' height='34' rx='8' fill='#2b6f9b'/><rect x='-44' y='-30' width='88' height='54' fill='#fff' opacity='.75'/><text x='0' y='8' text-anchor='middle' font-family='Anton' font-size='26' fill='#2b6f9b'>WATER</text></g></g>`;\nconst rope=`<g id='it5_1'>${card(400)}<g transform='translate(540,800)' fill='none' stroke='#c9a96a' stroke-width='12' stroke-linecap='round'><ellipse rx='84' ry='58'/><ellipse rx='64' ry='42'/><ellipse rx='44' ry='28'/><ellipse rx='24' ry='14'/><path d='M84 0 Q130 60 90 100'/></g></g>`;\nconst bar=`<g id='it5_2'>${card(730)}<g transform='translate(870,790)' fill='none' stroke='#2c2f36' stroke-width='20' stroke-linecap='round' stroke-linejoin='round'><path d='M-85 90 L55 -70 Q85 -100 112 -72 L92 -52'/><path d='M-85 90 L-110 108' stroke='#6a707a' stroke-width='14'/></g></g>`;\nreturn H.SV(H.aisle(12))+`<div class=layer style='background:rgba(0,0,0,.55)'></div>`+H.SV(water+rope+bar)+H.SV(R.stick('me5',{x:540,y:1760,s:1.15,face:'worried'}));",
+   "anim": "R.pose(tl,'me5','reach',S+0.8,.4);\n[[0,210],[1,540],[2,870]].forEach((a,i)=>{tl.from('#it5_'+a[0],{scale:0,opacity:0,svgOrigin:a[1]+' 790',duration:.25,ease:'back.out(2)'},S+D*[0.4,0.6,0.82][i]);});",
+   "sfx": [
+    {
+     "id": "pro_tap",
+     "at": 1.5,
+     "vol": 0.6
+    },
+    {
+     "id": "pro_tap",
+     "at": 2.1,
+     "vol": 0.6
+    },
+    {
+     "id": "pro_tap",
+     "at": 2.8,
+     "vol": 0.6
+    }
+   ]
+  },
+  {
+   "text": "At nine tonight, the power _dies_.",
+   "time": "9:00 PM",
+   "build": "\nconst ex=`<g><rect x='480' y='700' width='120' height='50' rx='6' fill='#1fa05a'/><text x='540' y='737' text-anchor='middle' font-family='Anton' font-size='32' fill='#fff'>EXIT</text><circle cx='540' cy='725' r='140' fill='#1fa05a' opacity='.12'/></g>`;\nconst cone=`<polygon id='cn6' points='442,1471 900,1150 900,1750' fill='#fff2b0' opacity='0'/>`;\nreturn H.SV(H.aisle(21))+`<div id='tc6' class=torch style='--x:38%;--y:80%;opacity:0'></div>`+H.SV(ex)+H.SV(cone)+H.SV(R.stick('me6',{x:300,y:1760,s:1.2,face:'worried'}));",
+   "anim": "R.set(tl,'me6','flash',S);\n[[0.3,.5],[0.38,0],[0.46,.8],[0.55,.1],[0.65,1]].forEach(a=>tl.set('#tc6',{opacity:a[1]},S+a[0]));\ntl.to('#cn6',{opacity:.3,duration:.3},S+0.75);\ntl.to('#cn6',{opacity:.18,duration:.15,repeat:5,yoyo:true},S+1.2);",
+   "sfx": [
+    {
+     "id": "downlifter",
+     "at": 0.2,
+     "vol": 0.8
+    },
+    {
+     "id": "pro_sub_drop",
+     "at": 0.5,
+     "vol": 0.6
+    }
+   ]
+  },
+  {
+   "text": "Then a radio crackles. Police say, go to the *base*.",
+   "time": "9:42 PM",
+   "who": "POLICE RADIO",
+   "build": "\nconst bars=[0,1,2,3,4,5,6,7,8,9,10,11].map(i=>`<rect id='nb7_${i}' x='${-110+i*20}' y='160' width='12' height='20' fill='#2cff7a' opacity='.85'/>`).join('');\nconst radio=`<defs><linearGradient id='bg7' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#10141f'/><stop offset='1' stop-color='#1a2030'/></linearGradient></defs><rect width='1080' height='1920' fill='url(#bg7)'/>\n<g transform='translate(540,660)'><rect x='60' y='-430' width='26' height='190' rx='8' fill='#0d0e12'/><rect x='-170' y='-250' width='340' height='520' rx='36' fill='#1b1d22' stroke='#3a3e46' stroke-width='8'/><rect x='-120' y='-210' width='240' height='90' rx='10' fill='#0e2a1a'/><text x='0' y='-152' text-anchor='middle' font-family='Mono' font-weight='700' font-size='30' fill='#2cff7a'>CH 4  POLICE</text><circle id='led7' cx='130' cy='-232' r='9' fill='#ff2a2a'/>${[0,1,2,3,4].map(i=>`<rect x='-110' y='${-70+i*32}' width='220' height='12' rx='6' fill='#0a0b0e'/>`).join('')}<g transform='translate(0,0)'>${bars}</g><circle cx='-90' cy='230' r='22' fill='#2c2f36'/><circle cx='-30' cy='230' r='22' fill='#2c2f36'/></g>\n<g fill='none' stroke='#2cff7a' stroke-width='6' opacity='.0' id='wv7'><path d='M690 340 Q740 400 690 460'/><path d='M730 310 Q810 400 730 490'/><path d='M770 280 Q880 400 770 520'/></g>`;\nreturn H.SV(radio)+`<div class=grain></div>`;",
+   "anim": "const r=H.rnd(4);\nfor(let k=0;k<14;k++){for(let i=0;i<12;i++){const h=10+r()*110;tl.set('#nb7_'+i,{attr:{height:h,y:180-h}},S+0.1+k*0.22);}}\ntl.set('#wv7',{opacity:.9},S+0.1);tl.to('#wv7',{opacity:.15,duration:.2,repeat:12,yoyo:true},S+0.1);\ntl.to('#led7',{opacity:.2,duration:.2,repeat:14,yoyo:true},S);",
+   "sfx": [
+    {
+     "id": "pro_glitch",
+     "at": 0.05,
+     "vol": 0.8
+    },
+    {
+     "id": "pro_glitch",
+     "at": 0.9,
+     "vol": 0.5
+    }
+   ]
+  },
+  {
+   "text": "The base speakers say, _stay back_. Go to the *station*.",
+   "time": "9:43 PM",
+   "who": "BASE LOUDSPEAKER",
+   "build": "\nconst t=`<defs><linearGradient id='sk8' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#07080f'/><stop offset='1' stop-color='#232a3a'/></linearGradient><linearGradient id='bm8' x1='1' y1='0' x2='0' y2='0'><stop offset='0' stop-color='#ffe9a0' stop-opacity='.9'/><stop offset='1' stop-color='#ffe9a0' stop-opacity='0'/></linearGradient></defs><rect width='1080' height='1920' fill='url(#sk8)'/>\n<rect y='1500' width='1080' height='420' fill='#1b2018'/><rect x='40' y='1340' width='360' height='160' fill='#262d20'/><rect x='80' y='1380' width='44' height='28' fill='#ffd36b'/><rect x='170' y='1380' width='44' height='28' fill='#ffd36b'/>\n${H.fence(0,1480,1080,160)}\n<g stroke='#2a3025' stroke-width='16'><line x1='640' y1='1500' x2='710' y2='700'/><line x1='900' y1='1500' x2='830' y2='700'/></g><g stroke='#2a3025' stroke-width='9'><line x1='655' y1='1300' x2='890' y2='1120'/><line x1='890' y1='1300' x2='662' y2='1120'/><line x1='675' y1='1050' x2='850' y2='900'/><line x1='850' y1='1050' x2='680' y2='900'/></g>\n<rect x='650' y='640' width='260' height='70' fill='#2a3025'/><polygon points='630,640 930,640 780,560' fill='#1b2018'/><rect x='670' y='655' width='220' height='30' fill='#ffd36b'/>\n<polygon id='bm8' points='700,670 -100,1100 -100,1500' fill='url(#bm8)' opacity='.5'/>\n<g><polygon points='650,600 560,540 560,660 650,650' fill='#15181a'/><rect x='640' y='596' width='20' height='56' fill='#15181a'/></g>\n<g fill='none' stroke='#fff' stroke-width='7' stroke-linecap='round'><path id='sw8_0' d='M520 560 Q485 600 520 640' opacity='0'/><path id='sw8_1' d='M470 530 Q415 600 470 670' opacity='0'/><path id='sw8_2' d='M420 500 Q345 600 420 700' opacity='0'/></g>`;\nreturn H.SV(t);",
+   "anim": "tl.fromTo('#bm8',{rotation:-4,svgOrigin:'700 670'},{rotation:6,svgOrigin:'700 670',duration:D,ease:'sine.inOut'},S);\n[0,1,2].forEach(i=>{for(let k=0;k<4;k++){tl.fromTo('#sw8_'+i,{opacity:0,x:0},{opacity:.95,x:-40,duration:.35,ease:'power1.out'},S+0.15+k*0.7+i*0.15);}});",
+   "sfx": [
+    {
+     "id": "pro_glitch",
+     "at": 0.0,
+     "vol": 0.6
+    },
+    {
+     "id": "alarm",
+     "at": 0.15,
+     "vol": 0.3
+    }
+   ]
+  },
+  {
+   "text": "The station is *right there*, but half its lights are out.",
+   "time": "11:10 PM",
+   "build": "\nconst sk=`<div class=layer>${R.skyline({fire:true,night:true,seed:11,horizon:1350})}</div>`;\nconst street=`<rect y='1350' width='1080' height='570' fill='#15141c'/>`;\nlet z='';[[160,1600,1.0,0],[880,1560,0.95,1],[300,1470,.7,0],[760,1450,.65,1]].forEach((a,i)=>{z+=H.zomb('z9_'+i,a[0],a[1],a[2],a[3],'#3d5640');});\nreturn sk+H.SV(street+H.police('p9',true,0.4,11))+`<div class=layer style='background:rgba(0,0,0,.25)'></div>`+H.SV(z);",
+   "anim": "[[160,1],[880,-1],[300,1],[760,-1]].forEach((a,i)=>{R.set(tl,'z9_'+i,H.Z1,S);H.zwalk(tl,'z9_'+i,a[0]+a[1]*90,S,D,0.6);});\nH.flash(tl,'p9',S,D,0.5);\n[0.5,0.62,0.9,1.0,1.7,1.8].forEach((t,k)=>tl.set('#p9bld',{opacity:k%2?1:0.55},S+t));",
+   "sfx": [
+    {
+     "id": "pro_sub_drop",
+     "at": 0.0,
+     "vol": 0.5
+    }
+   ]
+  },
+  {
+   "text": "The base has *everything*, but guards control the gate.",
+   "time": "11:12 PM",
+   "build": "\nconst stripes=[0,1,2,3,4,5,6,7,8,9,10,11].map(i=>`<rect x='${200+i*57}' y='1170' width='57' height='36' fill='${i%2?'#f4efe6':'#d42424'}'/>`).join('');\nconst crate=(x,y,w,h)=>`<rect x='${x}' y='${y}' width='${w}' height='${h}' fill='#5a6b3a' stroke='#2a3320' stroke-width='5'/><line x1='${x}' y1='${y+h/2}' x2='${x+w}' y2='${y+h/2}' stroke='#2a3320' stroke-width='4'/>`;\nconst scene=`<defs><linearGradient id='sk10' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#07080f'/><stop offset='1' stop-color='#2a3040'/></linearGradient><linearGradient id='bm10' x1='0' y1='0' x2='1' y2='0'><stop offset='0' stop-color='#ffe9a0' stop-opacity='.9'/><stop offset='1' stop-color='#ffe9a0' stop-opacity='0'/></linearGradient></defs><rect width='1080' height='1920' fill='url(#sk10)'/><rect y='1330' width='1080' height='590' fill='#1e241a'/>\n${crate(380,980,140,90)}${crate(520,980,140,90)}${crate(450,890,140,90)}${crate(700,940,200,130)}<rect x='140' y='990' width='170' height='80' fill='#4a5a3f'/><polygon points='310,990 360,1020 360,1070 310,1070' fill='#3b4a32'/><circle cx='190' cy='1075' r='22' fill='#111'/><circle cx='280' cy='1075' r='22' fill='#111'/>\n${H.fence(0,1060,1080,150)}\n<rect x='80' y='1040' width='180' height='290' fill='#3a4256'/><rect x='100' y='1070' width='140' height='70' fill='#ffd36b'/>\n${stripes}<rect x='860' y='1130' width='40' height='210' fill='#2a3025'/>\n<polygon id='bm10' points='900,300 150,1350 560,1450' fill='url(#bm10)' opacity='.4'/>`;\nconst rifle1=`<rect x='290' y='1496' width='210' height='14' fill='#0b0d10'/><rect x='430' y='1484' width='36' height='10' fill='#0b0d10'/>`;\nconst rifle2=`<rect x='580' y='1496' width='210' height='14' fill='#0b0d10'/><rect x='614' y='1484' width='36' height='10' fill='#0b0d10'/>`;\nreturn H.SV(scene)+H.SV(R.stick('g10a',{x:300,y:1760,s:1.0,color:'#10141a',stroke:'#000'})+R.stick('g10b',{x:780,y:1760,s:1.0,color:'#10141a',stroke:'#000',flip:true})+rifle1+rifle2);",
+   "anim": "R.set(tl,'g10a','point',S);R.set(tl,'g10b','point',S);\ntl.fromTo('#bm10',{rotation:-4,svgOrigin:'900 300'},{rotation:5,svgOrigin:'900 300',duration:D,ease:'sine.inOut'},S);",
+   "sfx": [
+    {
+     "id": "pro_impact",
+     "at": 1.6,
+     "vol": 0.6
+    }
+   ]
+  },
+  {
+   "text": "So do you run to the police station, or the military base?",
+   "time": "11:14 PM",
+   "cam": false,
+   "vignette": false,
+   "build": "\nconst left=`<g transform='translate(-60,520) scale(.8)'>${H.police('p11',true,0.5,5)}</g>`;\nconst right=`<g transform='translate(0,0)'><rect y='1300' width='1080' height='620' fill='#15181a'/><g stroke='#2a3025' stroke-width='14'><line x1='780' y1='1300' x2='830' y2='700'/><line x1='960' y1='1300' x2='910' y2='700'/></g><rect x='770' y='640' width='220' height='70' fill='#2a3025'/><polygon points='755,640 1005,640 880,570' fill='#1b2018'/><rect x='790' y='655' width='180' height='30' fill='#ffd36b'/></g>`;\nreturn `<div class=layer style='background:linear-gradient(#0b0d16,#1d2230)'></div>`+H.SV(left+right);",
+   "anim": "H.flash(tl,'p11',S,D,0.4);",
+   "ask": {
+    "q": "WHERE DO YOU GO?",
+    "a": "POLICE",
+    "b": "THE BASE",
+    "cta": "COMMENT POLICE OR BASE"
+   },
+   "sfx": [
+    {
+     "id": "pro_riser",
+     "at": 0.0,
+     "vol": 0.4
+    }
+   ]
+  }
+ ]
+}

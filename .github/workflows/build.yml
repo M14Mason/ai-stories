@@ -1,0 +1,44 @@
+name: build
+# Writes, renders and schedules today's episodes. 10:05 UTC = 2:05 AM Pacific (3:05 AM in summer).
+on:
+  schedule:
+    - cron: "5 10 * * *"
+  workflow_dispatch:
+    inputs:
+      series:
+        description: "Only this series id (blank = all active)"
+        required: false
+        default: ""
+permissions:
+  contents: write
+concurrency:
+  group: state
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: pip }
+      - uses: actions/setup-node@v4
+        with: { node-version: "22" }
+      - name: Cache models
+        uses: actions/cache@v4
+        with:
+          path: |
+            models
+            ~/.cache/huggingface
+          key: models-v1
+      - run: bash scripts/setup_ci.sh
+      - name: Build episodes
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -n "${{ inputs.series }}" ]; then python -m autopost build --series "${{ inputs.series }}"; else python -m autopost build; fi
+      - name: Save state
+        if: always()
+        run: bash scripts/commit_state.sh "build"

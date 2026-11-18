@@ -1,0 +1,32 @@
+[
+  {
+    "id": "homedepot",
+    "name": "Home Depot Outbreak",
+    "active": true,
+    "premise": "You are inside a Home Depot in a dense city when a zombie outbreak starts. A police station is across the street and a military base is two miles away. Each day is one more day of survival.",
+    "place": "HARDWARE STORE",
+    "voice": "am_onyx",
+    "music": "pulse",
+    "tone": "tense, practical survival rules, real facts"
+  },
+  {
+    "id": "floor14",
+    "name": "Floor 14",
+    "active": true,
+    "premise": "You live on floor fourteen of an apartment tower when the city loses power and something starts moving in the stairwells. Each episode is the next night.",
+    "place": "FLOOR 14",
+    "voice": "am_michael",
+    "music": "drone",
+    "tone": "slow dread, rules, one wrong detail per episode"
+  },
+  {
+    "id": "deadzone",
+    "name": "Dead Zone Road Trip",
+    "active": true,
+    "premise": "You are driving across a desert highway when every phone and radio goes silent and the towns you pass are empty. Each episode is the next stop.",
+    "place": "ROUTE 66",
+    "voice": "bm_george",
+    "music": "drone",
+    "tone": "mystery, survival choices, real desert survival facts"
+  }
+]

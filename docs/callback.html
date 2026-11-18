@@ -1,0 +1,15 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Signing in</title><style>body{background:#0b0d10;color:#e8eaed;font:16px -apple-system,system-ui,sans-serif;padding:24px}
+code{display:block;background:#14171c;border:1px solid #242a33;border-radius:12px;padding:14px;word-break:break-all;margin:12px 0}</style></head><body>
+<h2 id="h">Finishing sign-in...</h2><p id="p"></p><code id="c" hidden></code>
+<script>
+const q = new URLSearchParams(location.search), state = q.get("state") || "";
+if (state.startsWith("as_")) {
+  try { localStorage.setItem("as_oauth_result", JSON.stringify({state, code: q.get("code"), error: q.get("error")})); } catch (e) {}
+  location.replace("./#setup");
+} else {
+  document.getElementById("h").textContent = q.get("code") ? "Sign-in code" : "No sign-in code";
+  if (q.get("code")) { const c = document.getElementById("c"); c.hidden = false; c.textContent = q.get("code"); }
+  document.getElementById("p").textContent = q.get("error") ? q.get("error") + ": " + (q.get("error_description") || "") : "Paste this where the setup asked for it.";
+}
+</script></body></html>
