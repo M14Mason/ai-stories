@@ -1,1 +1,13 @@
-{"runs":[]}
+{
+  "runs": [
+    {
+      "kind": "build",
+      "at": "2026-11-18T18:48:57+00:00",
+      "ok": false,
+      "summary": "Setup not finished",
+      "errors": [
+        "Add your Claude API key in the dashboard Setup tab"
+      ]
+    }
+  ]
+}
